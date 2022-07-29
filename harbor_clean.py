@@ -109,7 +109,7 @@ for file in file_name:
         create_map_from_file(f"/srv/clone/{file}.txt", gitlabMapDev)
     elif file == 'test':
         create_map_from_file(f"/srv/clone/{file}.txt", gitlabMapTest)
-    elif file == 'finstory':
+    elif file == 'prod':
         create_map_from_file(f"/srv/clone/{file}.txt", gitlabMapProd)
 
 finalMap = gitlabMap.copy()
