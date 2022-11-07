@@ -1,0 +1,9 @@
+[Unit]
+Description=Telegram bot
+After=multi-user.target
+[Service]
+Type=simple
+Restart=always
+ExecStart=/usr/bin/python3.6 /path_to_script/main.py
+[Install]
+WantedBy=multi-user.target
