@@ -1,16 +1,12 @@
-from locale import currency
-from urllib import response
 import requests
 import json
 
 class Exchange():
-    api_exchange_url = "https://cdn.cur.su/api/latest.json"
+    api_key = "<YOU API KEY>"
     
     def __init__(self, currency):
         self.currency = currency
-        self.currency_first = currency.split("/")[0]
-        self.currency_second = currency.split("/")[1]
-
+        
     def send_request(self, url):
         req = requests.get(url=url)
         data = req.json()
@@ -18,10 +14,9 @@ class Exchange():
         return data
 
     def get_currency_exchange(self):
-        all_currency = self.send_request(self.api_exchange_url)
-        first_currency = all_currency['rates'][self.currency_first]
-        second_currency = all_currency['rates'][self.currency_second]
-        return first_currency, second_currency
+        result = self.send_request(f"https://currate.ru/api/?get=rates&pairs={self.currency}&key={self.api_key}")
+        result = result["data"][self.currency]
+        return result
     
     def get_currency_usd(self):
         all_currency = self.send_request(self.api_exchange_url)

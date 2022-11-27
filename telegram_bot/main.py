@@ -6,7 +6,7 @@ from weather import Weather
 from wiki import Wiki
 from exchange import Exchange
 
-telegram_bot_token = "<TOKEN>"
+telegram_bot_token = "<YOU TELEGRAM BOT TOKEN>"
 
 bot = telebot.TeleBot(telegram_bot_token)
 
@@ -52,45 +52,40 @@ def callback(call):
         elif call.data == "ex":
             bot.send_message(call.message.chat.id, "Курсы валют", reply_markup=currency_menu)
         elif call.data == "usd_rub":
-            currency_usd_rub = Exchange("USD/RUB")
-            currenct_usd = currency_usd_rub.get_currency_exchange()[0]
-            currenct_rub = currency_usd_rub.get_currency_exchange()[1]
-            message = f"USD: {currenct_usd} => RUB: {round(currenct_rub, 2)}"
+            currency_usd_rub = Exchange("USDRUB")
+            valutes_currency = float(currency_usd_rub.get_currency_exchange())
+            message = f"USD: 1 => RUB: {round(valutes_currency, 2)}"
             bot.send_message(call.message.chat.id, message)
         elif call.data == "amd_rub":
-            currency_amd_rub = Exchange("AMD/RUB")
-            currency_amd_to_usd = currency_amd_rub.get_currency_exchange()[0]
-            currency_rub_to_usd = currency_amd_rub.get_currency_exchange()[1]
-            currency_amd_to_rub = float(currency_rub_to_usd) / float(currency_amd_to_usd)
-            bot.send_message(call.message.chat.id, f"AMD: 1 => RUB: {round(currency_amd_to_rub, 2)}")
+            currency_amd_rub = Exchange("AMDRUB")
+            valutes_currency = float(currency_amd_rub.get_currency_exchange())
+            bot.send_message(call.message.chat.id, f"AMD: 1 => RUB: {round(valutes_currency, 2)}")
         elif call.data == "eur_rub":
-            currency_eur_rub = Exchange("EUR/RUB")
-            currency_eur_to_usd = currency_eur_rub.get_currency_exchange()[0]
-            currency_rub_to_usd = currency_eur_rub.get_currency_exchange()[1]
-            currency_eur_to_rub = float(currency_rub_to_usd) / float(currency_eur_to_usd)
-            bot.send_message(call.message.chat.id, f"EUR: 1 => RUB: {round(currency_eur_to_rub, 2)}")
+            currency_eur_rub = Exchange("EURRUB")
+            valutes_currency = float(currency_eur_rub.get_currency_exchange())
+            bot.send_message(call.message.chat.id, f"EUR: 1 => RUB: {round(valutes_currency, 2)}")
         elif call.data == "help":
             bot.send_message(call.message.chat.id, "Для началы работы с ботом напишите /start")
         elif call.data == "convert":
             bot.send_message(call.message.chat.id, "Конвертер валют", reply_markup=converter_menu)
         elif call.data == "convert_rub_to_usd":
             msg = converter_send_message(call)
-            bot.register_next_step_handler(msg, run_converter, "RUB/USD")
+            bot.register_next_step_handler(msg, run_converter, "RUBUSD")
         elif call.data == "convert_usd_rub":
             msg = converter_send_message(call)
-            bot.register_next_step_handler(msg, run_converter, "USD/RUB")
+            bot.register_next_step_handler(msg, run_converter, "USDRUB")
         elif call.data == "convert_rub_to_amd":
             msg = converter_send_message(call)
-            bot.register_next_step_handler(msg, run_converter, "RUB/AMD")
+            bot.register_next_step_handler(msg, run_converter, "RUBAMD")
         elif call.data == "convert_rub_to_eur":
             msg = converter_send_message(call)
-            bot.register_next_step_handler(msg, run_converter, "RUB/EUR")
+            bot.register_next_step_handler(msg, run_converter, "RUBEUR")
         elif call.data == "convert_amd":
             msg = converter_send_message(call)
-            bot.register_next_step_handler(msg, run_converter, "AMD/RUB")
+            bot.register_next_step_handler(msg, run_converter, "AMDRUB")
         elif call.data == "convert_eur":
             msg = converter_send_message(call)
-            bot.register_next_step_handler(msg, run_converter, "EUR/RUB")
+            bot.register_next_step_handler(msg, run_converter, "EURRUB")
 
 @bot.message_handler(content_types=["text"])
 def message_handler(m):
@@ -111,32 +106,13 @@ def show_wiki_answer(msg):
     bot.send_message(msg.chat.id, wiki_response)
 
 def run_converter(msg, ex):
-    if ex == "RUB/USD":
-        valute = Exchange(ex)
-        rub = valute.get_currency_exchange()[0]
-        sum = int(msg.text)
-        result = sum / float(rub)
-        bot.send_message(msg.chat.id, f" {sum} RUB => {round(result, 2)} USD")
-    elif ex == "USD/RUB":
-        valute = Exchange(ex)
-        rub = valute.get_currency_exchange()[1]
-        sum = int(msg.text)
-        result = sum * rub
-        bot.send_message(msg.chat.id, f"{sum} USD => {round(result, 2)} RUB")
-    else:
-        ex_first = ex.split("/")[0]
-        ex_second = ex.split("/")[1]
-        sum = int(msg.text)
-        valute = Exchange(ex)
-        first_valute = valute.get_currency_exchange()[0]
-        second_valute = valute.get_currency_exchange()[1]
-        if ex_first == "RUB":
-            cross = float(first_valute) / float(second_valute)
-            result = sum / cross
-        else:
-            cross = float(second_valute) / float(first_valute)
-            result = sum * cross
-        bot.send_message(msg.chat.id, f"{sum} {ex_first} => {round(result, 2)} {ex_second}")
+    valute = Exchange(ex)
+    first_ex = ex[:3]
+    second_ex = ex[3:]
+    currency = valute.get_currency_exchange()
+    sum = int(msg.text)
+    result = sum * float(currency)
+    bot.send_message(msg.chat.id, f" {sum} {first_ex} => {round(result, 2)} {second_ex}")
 
 def main():
     bot.polling(none_stop=True, interval=0)

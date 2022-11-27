@@ -12,7 +12,7 @@ def main():
     #w = input("Enter wiki request")
     #wiki = Wiki(w)
     #print(wiki.get_wiki_info())
-    e = Exchange("AMD/USD")
+    e = Exchange("EURRUB")
     resp = e.get_currency_exchange()
     print(resp)
 if __name__ == "__main__":
